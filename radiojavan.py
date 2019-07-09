@@ -1,5 +1,6 @@
 import requests
 import re
+from bs4 import BeautifulSoup
 
 
 class MediaType:
@@ -25,6 +26,7 @@ class RadioJavan:
             return None
 
     def request_html(self, url, json=False):
+        url = url.strip()
         headers = {'User-agent': 'Mozilla/5.0'}
         r = requests.get(url, headers=headers)
         if r.status_code == 200:
@@ -59,8 +61,23 @@ class RadioJavan:
         dl_link = dl_base_url[media_type] % (host, file_name)
         return dl_link
 
+    def get_podcast_track_lists(self, podcast_url):
+        """ Extract podcast track list
+        :param podcast_url: podcast page url
+        :return: list
+        """
+        html = self.request_html(podcast_url)
+        soup = BeautifulSoup(html, 'lxml')
+        div = soup.find('div', {'id': 'tracklist'})
+        print(div)
+        track_lists = list()
+        for li in div.find_all('li'):
+            track_lists.append(li.get_text().strip())
+        return track_lists
+
 
 if __name__ == "__main__":
     link = input("Enter link: ")
     rj = RadioJavan()
-    print(rj.get_download_link(link))
+    # print(rj.get_download_link(link))
+    print(rj.get_podcast_track_lists(link))
