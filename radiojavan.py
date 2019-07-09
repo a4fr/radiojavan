@@ -69,7 +69,6 @@ class RadioJavan:
         html = self.request_html(podcast_url)
         soup = BeautifulSoup(html, 'lxml')
         div = soup.find('div', {'id': 'tracklist'})
-        print(div)
         track_lists = list()
         for li in div.find_all('li'):
             track_lists.append(li.get_text().strip())
